@@ -10,5 +10,5 @@ runner <- function() {
 
 	fn <- storage_read(bootstrap$storage, c(bootstrap$stage_storage_prefix, bootstrap$stage_id, "code.rds"))
 	res <- fn()
-	storage_write(bootstrap$storage, c(bootstrap$stage_storage_prefix, bootstrap$stage_id, "result.rds"))
+	storage_write(bootstrap$storage, c(bootstrap$stage_storage_prefix, bootstrap$stage_id, "result.rds"), res)
 }
