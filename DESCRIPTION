@@ -1,0 +1,20 @@
+Package: cloudburst
+Type: Package
+Title: Cloud-Based Distributed Compute for R
+Version: 0.1.0
+Author: Ruan Pearce-Authers
+Maintainer: Ruan Pearce-Authers <ruan@hypothesci.com>
+Description: TODO
+License: GPL
+Encoding: UTF-8
+LazyData: true
+Imports:
+  aws.s3,
+  aws.signature,
+  jsonlite,
+  crul,
+  reticulate,
+  igraph,
+  uuid,
+  base64enc
+RoxygenNote: 6.1.1
