@@ -21,10 +21,10 @@ project_aws <- function(region = aws.signature::locate_credentials()$region) {
 #' @export
 #'
 #' @examples
-init_aws <- function(storage_bucket, compute_cluster, compute_image, compute_execution_role, compute_subnets,
+init_aws <- function(storage_bucket, compute_cluster, compute_image, compute_execution_role, compute_subnets, compute_task_role,
 	region = aws.signature::locate_credentials()$region) {
 	project <- project_aws(region)
-	register_compute_backend(compute_ecs(project, compute_cluster, compute_image, compute_execution_role, compute_subnets))
+	register_compute_backend(compute_ecs(project, compute_cluster, compute_image, compute_execution_role, compute_subnets, compute_task_role))
 	register_storage_backend(storage_s3(project, storage_bucket))
 	invisible(project)
 }

@@ -10,20 +10,22 @@
 #' @export
 #'
 #' @examples
-compute_ecs <- function(project, cluster, image, execution_role, subnets) {
+compute_ecs <- function(project, cluster, image, execution_role, subnets, task_role) {
 	structure(class = "ecs_compute",
 		list(
 			project = project,
 			cluster = cluster,
 			image = image,
 			execution_role = execution_role,
-			subnets = subnets
+			subnets = subnets,
+			task_role = task_role
 		)
 	)
 }
 
 compute_prepare_run.ecs_compute <- function(compute, name) {
-	ecs_register_task_definition(compute$project$region, paste0("cloudburst-", name), compute$image, compute$execution_role)
+	ecs_register_task_definition(compute$project$region, paste0("cloudburst-", name),
+		compute$image, compute$execution_role, compute$task_role)
 }
 
 #' Title
@@ -60,7 +62,8 @@ compute_run_stage.ecs_stage <- function(stage, name, bootstrap) {
 		subnets = stage$backend$subnets,
 		assign_public_ip = T, # FIXME: should expose public IPs as a config depending on subnet routing
 		cpu = stage$cpu,
-		memory = stage$memory
+		memory = stage$memory,
+		environment = data.frame(name = "CLOUDBURST_BOOTSTRAP", value = bootstrap)
 	)
 
 	res$tasks$taskArn

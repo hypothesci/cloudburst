@@ -4,7 +4,7 @@
 \alias{compute_ecs}
 \title{Title}
 \usage{
-compute_ecs(project, cluster, image, execution_role, subnets)
+compute_ecs(project, cluster, image, execution_role, subnets, task_role)
 }
 \arguments{
 \item{project}{}

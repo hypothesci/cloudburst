@@ -43,7 +43,8 @@ ecs_http <- function(region, verb, operation, body = NULL) {
 	jsonlite::fromJSON(res$parse(), flatten = T)
 }
 
-ecs_run_task <- function(region, family, cluster, subnets, security_groups = list(), assign_public_ip = F, revision = NULL, count = 1, cpu = 2048, memory = 4096) {
+ecs_run_task <- function(region, family, cluster, subnets, security_groups = list(), assign_public_ip = F,
+	revision = NULL, count = 1, cpu = 2048, memory = 4096, environment = list()) {
 	task_def <- if (!is.null(revision)) paste0(family, ":", revision) else family
 
 	ecs_http(region, "POST", "RunTask", body = list(
@@ -55,7 +56,8 @@ ecs_run_task <- function(region, family, cluster, subnets, security_groups = lis
 			containerOverrides = list(list(
 				name = jsonlite::unbox(family),
 				cpu = jsonlite::unbox(cpu),
-				memory = jsonlite::unbox(memory)
+				memory = jsonlite::unbox(memory),
+				environment = environment
 			))
 		),
 		networkConfiguration = list(
@@ -76,7 +78,7 @@ ecs_describe_tasks <- function(region, tasks, cluster) {
 	))
 }
 
-ecs_register_task_definition <- function(region, family, image, execution_role, cpu = 2048, memory = 4096) {
+ecs_register_task_definition <- function(region, family, image, execution_role, task_role, cpu = 2048, memory = 4096) {
 	ecs_http(region, "POST", "RegisterTaskDefinition", body = list(
 		networkMode = jsonlite::unbox("awsvpc"),
 		containerDefinitions = list(list(
@@ -91,6 +93,7 @@ ecs_register_task_definition <- function(region, family, image, execution_role, 
 		compatibilities = "FARGATE",
 		cpu = jsonlite::unbox(as.character(cpu)),
 		memory = jsonlite::unbox(as.character(memory)),
-		executionRoleArn = jsonlite::unbox(execution_role)
+		executionRoleArn = jsonlite::unbox(execution_role),
+		taskRoleArn = jsonlite::unbox(task_role)
 	))
 }

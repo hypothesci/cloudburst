@@ -5,7 +5,8 @@ cloudburst::init_aws(
 	compute_cluster = "dev",
 	compute_image = "641185533649.dkr.ecr.us-east-1.amazonaws.com/cloudburst:latest",
 	compute_execution_role = "arn:aws:iam::641185533649:role/ecsTaskExecutionRole",
-	compute_subnets = "subnet-8a8b9b85"
+	compute_subnets = "subnet-8a8b9b85",
+	compute_task_role = "arn:aws:iam::641185533649:role/cloudburst-task"
 )
 
 get_data_1 <- cloudburst::exec_ecs(cpu = 1024, memory = 1024, function() {
