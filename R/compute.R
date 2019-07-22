@@ -1,22 +1,14 @@
 
-#' Title
-#'
-#' @param fn
-#'
-#' @return
-#' @export
-#'
-#' @examples
-exec_local <- function(fn) {
-	function(...) {
-		structure(class = "local_stage",
-			list(
-				name = as.character(match.call()[[1]]),
-				fn = fn,
-				args = list(...)
-			)
-		)
-	}
+compute_prepare_run <- function(compute, name) {
+	UseMethod("compute_prepare_run", compute)
+}
+
+compute_run_stage <- function(stage, name, bootstrap) {
+	UseMethod("compute_run_stage", stage)
+}
+
+compute_poll_stage <- function(stage, handle) {
+	UseMethod("compute_poll_stage", stage)
 }
 
 #' Title
@@ -29,7 +21,10 @@ exec_local <- function(fn) {
 #' @export
 #'
 #' @examples
-execute <- function(final_stage, name, storage = default_storage_backend()) {
+execute <- function(final_stage, name, storage = default_storage_backend(), compute = default_compute_backend()) {
+	# FIXME: this should be run elsewhere, no need to spam task defs
+	compute_prepare_run(compute, name)
+
 	all_stages <- list(final_stage)
 
 	add_stages <- function(stage) {
@@ -79,6 +74,7 @@ execute <- function(final_stage, name, storage = default_storage_backend()) {
 	next_stages <- which(sapply(dependencies_by_stage, length) == 0)
 	completed <- rep(F, length(all_stages))
 	executing <- c()
+	handles <- list()
 
 	while (length(next_stages) > 0 | length(executing) > 0) {
 		newly_ready <- c()
@@ -98,7 +94,10 @@ execute <- function(final_stage, name, storage = default_storage_backend()) {
 			stage_bootstrap$stage_id <- stage_index
 
 			stage_bootstrap_encoded <- base64enc::base64encode(serialize(stage_bootstrap, connection = NULL))
-			# TODO: start task
+			handles[[stage_index]] <- compute_run_stage(stages[[stage_index]], name, stage_bootstrap_encoded)
+
+			print("handle state:")
+			print(handles)
 		}
 
 		executing <- unique(c(executing, newly_ready))
@@ -108,9 +107,14 @@ execute <- function(final_stage, name, storage = default_storage_backend()) {
 		for (stage_index in executing) {
 			print(paste0("checking on stage: ", stage_index))
 
-			# TODO: poll task state
-			if (T) {
+			status <- compute_poll_stage(stages[[stage_index]], handles[[stage_index]])
+
+			if (status == "complete") {
 				newly_completed <- c(newly_completed, stage_index)
+			} else if (status == "failed") {
+				stop(paste0("stage failed: ", stage_index))
+			} else if (status != "executing") {
+				stop(paste0("unknown status for stage: ", stage_index))
 			}
 		}
 
@@ -124,5 +128,8 @@ execute <- function(final_stage, name, storage = default_storage_backend()) {
 		executing <- executing[!executing %in% newly_completed]
 
 		print("step complete")
+
+		# FIXME: am I really ok shipping this? is this even legal?
+		Sys.sleep(1)
 	}
 }

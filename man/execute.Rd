@@ -4,7 +4,8 @@
 \alias{execute}
 \title{Title}
 \usage{
-execute(final_stage, name, storage = default_storage_backend())
+execute(final_stage, name, storage = default_storage_backend(),
+  compute = default_compute_backend())
 }
 \arguments{
 \item{name}{}

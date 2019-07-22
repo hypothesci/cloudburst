@@ -4,7 +4,8 @@
 \alias{init_aws}
 \title{Title}
 \usage{
-init_aws(storage_bucket, compute_cluster,
+init_aws(storage_bucket, compute_cluster, compute_image,
+  compute_execution_role, compute_subnets,
   region = aws.signature::locate_credentials()$region)
 }
 \arguments{

@@ -1,5 +1,7 @@
 
-ecs_http <- function(creds, verb, operation, body = NULL) {
+ecs_http <- function(region, verb, operation, body = NULL) {
+	creds <- aws.signature::locate_credentials(region = region)
+
 	if (!is.null(body)) {
 		body_json <- jsonlite::toJSON(body)
 		print(body_json)
@@ -41,10 +43,10 @@ ecs_http <- function(creds, verb, operation, body = NULL) {
 	jsonlite::fromJSON(res$parse(), flatten = T)
 }
 
-ecs_run_task <- function(creds, family, cluster, subnets, security_groups = list(), assign_public_ip = F, revision = NULL, count = 1, cpu = 2048, memory = 4096) {
+ecs_run_task <- function(region, family, cluster, subnets, security_groups = list(), assign_public_ip = F, revision = NULL, count = 1, cpu = 2048, memory = 4096) {
 	task_def <- if (!is.null(revision)) paste0(family, ":", revision) else family
 
-	ecs_http(creds, "POST", "RunTask", body = list(
+	ecs_http(region, "POST", "RunTask", body = list(
 		cluster = jsonlite::unbox(cluster),
 		count = jsonlite::unbox(count),
 		launchType = jsonlite::unbox("FARGATE"),
@@ -67,15 +69,15 @@ ecs_run_task <- function(creds, family, cluster, subnets, security_groups = list
 	))
 }
 
-ecs_describe_tasks <- function(creds, tasks, cluster) {
-	ecs_http(creds, "POST", "DescribeTasks", body = list(
+ecs_describe_tasks <- function(region, tasks, cluster) {
+	ecs_http(region, "POST", "DescribeTasks", body = list(
 		tasks = tasks,
 		cluster = jsonlite::unbox(cluster)
 	))
 }
 
-ecs_register_task_definition <- function(creds, family, image, cpu = 2048, memory = 4096) {
-	ecs_http(creds, "POST", "RegisterTaskDefinition", body = list(
+ecs_register_task_definition <- function(region, family, image, execution_role, cpu = 2048, memory = 4096) {
+	ecs_http(region, "POST", "RegisterTaskDefinition", body = list(
 		networkMode = jsonlite::unbox("awsvpc"),
 		containerDefinitions = list(list(
 			name = jsonlite::unbox(family),
@@ -88,6 +90,7 @@ ecs_register_task_definition <- function(creds, family, image, cpu = 2048, memor
 		requiresCompatibilities = "FARGATE",
 		compatibilities = "FARGATE",
 		cpu = jsonlite::unbox(as.character(cpu)),
-		memory = jsonlite::unbox(as.character(memory))
+		memory = jsonlite::unbox(as.character(memory)),
+		executionRoleArn = jsonlite::unbox(execution_role)
 	))
 }
