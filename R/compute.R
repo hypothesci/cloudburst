@@ -65,8 +65,9 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 	)
 
 	for (i in 1:length(stages)) {
+		stage <- stages[[i]]
 		storage_write(storage, c(stage_storage_prefix, i, "code.rds"), stage$fn)
-		storage_write(storage, c(stage_storage_prefix, i, paste0(".name=", stages[[i]]$name)), NULL)
+		storage_write(storage, c(stage_storage_prefix, i, paste0(".name=", stage$name)), NULL)
 	}
 
 	dependencies_by_stage <- sapply(igraph::V(graph), function(x) igraph::neighbors(graph, x, mode = "in"))
