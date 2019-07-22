@@ -11,6 +11,7 @@ LazyData: true
 Imports:
   aws.s3,
   aws.signature,
+  aws.ec2metadata,
   jsonlite,
   crul,
   reticulate,
