@@ -86,7 +86,15 @@ ecs_register_task_definition <- function(region, family, image, execution_role, 
 			image = jsonlite::unbox(image),
 			essential = jsonlite::unbox(T),
 			cpu = jsonlite::unbox(cpu),
-			memory = jsonlite::unbox(memory)
+			memory = jsonlite::unbox(memory),
+			logConfiguration = list(
+				logDriver = jsonlite::unbox("awslogs"),
+				options = list(
+					"awslogs-group" = jsonlite::unbox("cloudburst"),
+					"awslogs-region" = jsonlite::unbox(region),
+					"awslogs-stream-prefix" = jsonlite::unbox("cloudburst")
+				)
+			)
 		)),
 		family = jsonlite::unbox(family),
 		requiresCompatibilities = "FARGATE",
