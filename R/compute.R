@@ -90,11 +90,14 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 		for (stage_index in newly_ready) {
 			print(paste0("starting stage: ", stage_index))
 
+			stage <- stages[[stage_index]]
+
 			stage_bootstrap <- bootstrap_base
 			stage_bootstrap$stage_id <- stage_index
+			stage_bootstrap$dependency_ids <- sapply(stage$args, function(a) find_stage_index(a))
 
 			stage_bootstrap_encoded <- base64enc::base64encode(serialize(stage_bootstrap, connection = NULL))
-			handles[[stage_index]] <- compute_run_stage(stages[[stage_index]], name, stage_bootstrap_encoded)
+			handles[[stage_index]] <- compute_run_stage(stage, name, stage_bootstrap_encoded)
 
 			print("handle state:")
 			print(handles)
