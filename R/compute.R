@@ -136,4 +136,6 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 		# FIXME: am I really ok shipping this? is this even legal?
 		Sys.sleep(1)
 	}
+
+	storage_read(storage, c(stage_storage_prefix, 1, "result.rds"))
 }
