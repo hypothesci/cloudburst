@@ -81,7 +81,6 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 	for (i in 1:length(stages)) {
 		stage <- stages[[i]]
 		storage_write(storage, c(stage_storage_prefix, i, "code.rds"), stage$fn)
-		storage_write(storage, c(stage_storage_prefix, i, paste0(".name=", stage$name)), NULL)
 	}
 
 	dependencies_by_stage <- sapply(igraph::V(graph), function(x) igraph::neighbors(graph, x, mode = "in"))
@@ -113,9 +112,6 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 
 			stage_bootstrap_encoded <- base64enc::base64encode(serialize(stage_bootstrap, connection = NULL))
 			handles[[stage_index]] <- compute_run_stage(stage, name, stage_bootstrap_encoded)
-
-			print("handle state:")
-			print(handles)
 		}
 
 		executing <- unique(c(executing, newly_ready))
@@ -123,8 +119,6 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 
 		newly_completed <- c()
 		for (stage_index in executing) {
-			print(paste0("checking on stage: ", stage_index))
-
 			status <- compute_poll_stage(stages[[stage_index]], handles[[stage_index]])
 
 			if (status == "complete") {
@@ -144,8 +138,6 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 		completed[newly_completed] <- T
 		next_stages <- unique(c(next_stages, unlist(dependents_by_stage[newly_completed])))
 		executing <- executing[!executing %in% newly_completed]
-
-		print("step complete")
 
 		# FIXME: am I really ok shipping this? is this even legal?
 		Sys.sleep(1)

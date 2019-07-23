@@ -4,7 +4,6 @@ ecs_http <- function(region, verb, operation, body = NULL) {
 
 	if (!is.null(body)) {
 		body_json <- jsonlite::toJSON(body)
-		print(body_json)
 	}
 
 	host <- paste0("ecs.", creds$region, ".amazonaws.com")
@@ -33,14 +32,12 @@ ecs_http <- function(region, verb, operation, body = NULL) {
 	client <- crul::HttpClient$new(url = paste0("https://", host), headers = headers)
 	res <- client$verb(verb, path = "/", body = body_json)
 
-	print(res$parse())
-
 	if (res$status_code != 200) {
 		status <- res$status_http()
 		stop(paste0(operation, " failed, ", status$message, "(", status$status_code, "): ", res$parse()))
 	}
 
-	jsonlite::fromJSON(res$parse(), flatten = T)
+	jsonlite::fromJSON(res$parse(encoding = "UTF-8"), flatten = T)
 }
 
 ecs_run_task <- function(region, family, cluster, subnets, security_groups = list(), assign_public_ip = F,
