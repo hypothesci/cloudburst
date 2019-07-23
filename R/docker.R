@@ -17,7 +17,8 @@ docker_deploy <- function(image) {
 		paste0("RUN Rscript -e \"", code, "\"")
 	}
 
-	context_dir <- tempdir()
+	context_dir <- file.path(tempdir(), uuid::UUIDgenerate(F))
+	dir.create(context_dir)
 
 	using_packrat <- requireNamespace("packrat", quietly = T) && any(grepl("packrat", packrat::search_path()$lib.dir))
 
@@ -40,6 +41,8 @@ docker_deploy <- function(image) {
 			"packrat::packify()"
 		)
 	} else {
+		docker_operations <- NULL
+
 		bootstrap_operations <- c(
 			"install.packages('remotes')",
 			"remotes::install_github('hypothesci/cloudburst')"
