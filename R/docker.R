@@ -54,7 +54,7 @@ docker_deploy <- function(image) {
 		paste0("RUN apt-get update && apt-get install -y ", paste(apt_deps, collapse = " ")),
 		docker_operations,
 		rscript(paste(bootstrap_operations, collapse = "; ")),
-		"CMD [ \"Rscript\", \"-e\", '\"cloudburst::runner()\""
+		"CMD [ \"Rscript\", \"-e\", \"cloudburst::runner()\""
 	)
 
 	writeLines(lines, con = file.path(context_dir, "Dockerfile"))
