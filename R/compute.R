@@ -1,4 +1,18 @@
 
+#' Title
+#'
+#' @param fn
+#' @param compute
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+stage <- function(fn, compute = default_compute_backend(), ...) {
+	UseMethod("stage", compute)
+}
+
 compute_prepare_run <- function(compute, name) {
 	UseMethod("compute_prepare_run", compute)
 }

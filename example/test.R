@@ -9,19 +9,19 @@ cloudburst::init_aws(
 	compute_task_role = "arn:aws:iam::641185533649:role/cloudburst-task"
 )
 
-get_data_1 <- cloudburst::exec_ecs(cpu = 1024, memory = 1024, function() {
+get_data_1 <- cloudburst::stage(cpu = 1024, memory = 1024, function() {
 	data.frame(x = runif(100), y = rnorm(100))
 })
 
-get_data_2 <- cloudburst::exec_ecs(cpu = 1024, memory = 1024, function() {
+get_data_2 <- cloudburst::stage(cpu = 1024, memory = 1024, function() {
 	data.frame(x = rnorm(100), y = runif(100))
 })
 
-process_data <- cloudburst::exec_ecs(cpu = 1024, memory = 1024, function(data1, data2) {
+process_data <- cloudburst::stage(cpu = 1024, memory = 1024, function(data1, data2) {
 	rbind(data1, data2)
 })
 
-finalise_data <- cloudburst::exec_ecs(cpu = 1024, memory = 1024, function(data) {
+finalise_data <- cloudburst::stage(cpu = 1024, memory = 1024, function(data) {
 	lm(y ~ x, data)
 })
 

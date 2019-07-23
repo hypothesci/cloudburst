@@ -39,7 +39,7 @@ compute_prepare_run.ecs_compute <- function(compute, name) {
 #' @export
 #'
 #' @examples
-exec_ecs <- function(fn, cpu, memory, backend = default_compute_backend()) {
+stage.ecs_compute <- function(fn, cpu, memory, backend = default_compute_backend()) {
 	function(...) {
 		structure(class = "ecs_stage",
 			list(
