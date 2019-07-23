@@ -30,6 +30,10 @@ docker_deploy <- function(image) {
 		dir.create(target_packrat_dir)
 		file.copy(packrat_files, target_packrat_dir)
 
+		docker_operations <- c(
+			"COPY packrat packrat"
+		)
+
 		bootstrap_operations <- c(
 			"install.packages('packrat')",
 			"packrat::restore()",
@@ -45,6 +49,7 @@ docker_deploy <- function(image) {
 	lines <- c(
 		paste0("FROM ", base),
 		paste0("RUN apt-get update && apt-get install -y ", paste(apt_deps, collapse = " ")),
+		docker_operations,
 		rscript(paste(bootstrap_operations, collapse = "; ")),
 		"CMD [ \"Rscript\", \"-e\", '\"cloudburst::runner()\""
 	)
