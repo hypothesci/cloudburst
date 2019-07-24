@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-docker_deploy <- function(image) {
+docker_deploy <- function(image, system_deps = c()) {
 	r_version <- R.Version()
 	r_version_str <- paste0(r_version$major, ".", r_version$minor)
 
@@ -18,7 +18,8 @@ docker_deploy <- function(image) {
 		"libxml2-dev",
 		"libssl-dev",
 		"locales",
-		sapply(r_deps, function(d) paste0(d, "=", r_version_str, "-*"))
+		sapply(r_deps, function(d) paste0(d, "=", r_version_str, "-*")),
+		system_deps
 	)
 
 	rscript <- function(code) {
