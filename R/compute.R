@@ -80,7 +80,16 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 
 	for (i in 1:length(stages)) {
 		stage <- stages[[i]]
-		storage_write(storage, c(stage_storage_prefix, i, "code.rds"), stage$fn)
+
+		stage_globals <- globals::globalsOf(stage$fn, mustExist = F)
+		stage_globals <- globals::cleanup(stage_globals)
+
+		stage_data <- list(
+			fn = stage$fn,
+			globals = stage_globals
+		)
+
+		storage_write(storage, c(stage_storage_prefix, i, "code.rds"), stage_data)
 	}
 
 	dependencies_by_stage <- sapply(igraph::V(graph), function(x) igraph::neighbors(graph, x, mode = "in"))

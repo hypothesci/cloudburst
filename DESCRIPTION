@@ -16,5 +16,6 @@ Imports:
   crul,
   igraph,
   uuid,
-  base64enc
+  base64enc,
+  globals
 RoxygenNote: 6.1.1

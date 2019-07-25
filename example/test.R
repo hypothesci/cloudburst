@@ -9,12 +9,14 @@ cloudburst::init_aws(
 	compute_task_role = "arn:aws:iam::641185533649:role/cloudburst-task"
 )
 
+n_obs <- 100
+
 get_data_1 <- cloudburst::stage(cpu = 1024, memory = 1024, function() {
-	data.frame(x = runif(100), y = rnorm(100))
+	data.frame(x = runif(n_obs), y = rnorm(n_obs))
 })
 
 get_data_2 <- cloudburst::stage(cpu = 1024, memory = 1024, function() {
-	data.frame(x = rnorm(100), y = runif(100))
+	data.frame(x = rnorm(n_obs), y = runif(n_obs))
 })
 
 process_data <- cloudburst::stage(cpu = 1024, memory = 1024, function(data1, data2) {
