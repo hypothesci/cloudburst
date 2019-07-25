@@ -26,13 +26,16 @@ cloudburst::init_aws(
   compute_task_role = "arn:aws:iam::12345:role/my-cloudburst-role"
 )
 
+# variables are transparently made available to stages as needed
+num_observations <- 1000
+
 # let's pretend we've got two stages that build large datasets somehow
 get_data_x <- cloudburst::stage(cpu = 1024, memory = 2048, function() {
-  data.frame(x = runif(1000))
+  data.frame(x = runif(num_observations))
 })
 
 get_data_y <- cloudburst::stage(cpu = 1024, memory = 2048, function() {
-  data.frame(y = rnorm(1000))
+  data.frame(y = rnorm(num_observations))
 })
 
 # and a third stage that does some "intensive" computation over the two
