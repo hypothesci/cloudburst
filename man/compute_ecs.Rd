@@ -4,7 +4,8 @@
 \alias{compute_ecs}
 \title{Title}
 \usage{
-compute_ecs(project, cluster, image, execution_role, subnets, task_role)
+compute_ecs(project, cluster, image, execution_role, subnets, task_role,
+  assign_public_ip)
 }
 \arguments{
 \item{project}{}

@@ -13,7 +13,7 @@ stage <- function(fn, compute = default_compute_backend(), ...) {
 	UseMethod("stage", compute)
 }
 
-compute_prepare_run <- function(compute, name) {
+compute_prepare_run <- function(compute, name, stages) {
 	UseMethod("compute_prepare_run", compute)
 }
 
@@ -36,9 +36,6 @@ compute_poll_stage <- function(stage, handle) {
 #'
 #' @examples
 execute <- function(final_stage, name, storage = default_storage_backend(), compute = default_compute_backend()) {
-	# FIXME: this should be run elsewhere, no need to spam task defs
-	compute_prepare_run(compute, name)
-
 	all_stages <- list(final_stage)
 
 	add_stages <- function(stage) {
@@ -68,6 +65,10 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 	if (!igraph::is_dag(graph)) {
 		stop("plan contains cycles")
 	}
+
+	# FIXME: this should be run elsewhere, no need to spam task defs
+	# also needs to be organised oer compute backend
+	compute_prepare_run(compute, name, stages)
 
 	run_start <- Sys.time()
 	run_id <- paste0(format(run_start, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"), "--", uuid::UUIDgenerate(use.time = F))

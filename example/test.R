@@ -6,24 +6,25 @@ cloudburst::init_aws(
 	compute_image = "641185533649.dkr.ecr.us-east-1.amazonaws.com/cloudburst:latest",
 	compute_execution_role = "arn:aws:iam::641185533649:role/ecsTaskExecutionRole",
 	compute_subnets = "subnet-8a8b9b85",
-	compute_task_role = "arn:aws:iam::641185533649:role/cloudburst-task"
+	compute_task_role = "arn:aws:iam::641185533649:role/cloudburst-task",
+	compute_assign_public_ip = T
 )
 
 n_obs <- 100
 
-get_data_1 <- cloudburst::stage(cpu = 1024, memory = 1024, function() {
+get_data_1 <- cloudburst::stage(cpu = 512, memory = 1024, function() {
 	data.frame(x = runif(n_obs), y = rnorm(n_obs))
 })
 
-get_data_2 <- cloudburst::stage(cpu = 1024, memory = 1024, function() {
+get_data_2 <- cloudburst::stage(cpu = 512, memory = 1024, function() {
 	data.frame(x = rnorm(n_obs), y = runif(n_obs))
 })
 
-process_data <- cloudburst::stage(cpu = 1024, memory = 1024, function(data1, data2) {
+process_data <- cloudburst::stage(cpu = 1024, memory = 2048, function(data1, data2) {
 	rbind(data1, data2)
 })
 
-finalise_data <- cloudburst::stage(cpu = 1024, memory = 1024, function(data) {
+finalise_data <- cloudburst::stage(cpu = 1024, memory = 2048, function(data) {
 	lm(y ~ x, data)
 })
 

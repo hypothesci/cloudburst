@@ -18,6 +18,7 @@ cloudburst::init_aws(
    # let's indicate which cluster we're running in and which subnets to use for ECS
   compute_cluster = "data",
   compute_subnets = c("subnet-abcdef", "subnet-ghijkl"),
+  compute_assign_public_ip = T,
   # you need a Docker image, see the "Managing Dependencies" section below
   compute_image = "12345.dkr.ecr.us-east-1.amazonaws.com/my-cloudburst-image:latest",
   # the execution role can just be the default ECS execution role for your account

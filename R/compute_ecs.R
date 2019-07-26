@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-compute_ecs <- function(project, cluster, image, execution_role, subnets, task_role) {
+compute_ecs <- function(project, cluster, image, execution_role, subnets, task_role, assign_public_ip) {
 	structure(class = "ecs_compute",
 		list(
 			project = project,
@@ -18,14 +18,24 @@ compute_ecs <- function(project, cluster, image, execution_role, subnets, task_r
 			image = image,
 			execution_role = execution_role,
 			subnets = subnets,
-			task_role = task_role
+			task_role = task_role,
+			assign_public_ip = assign_public_ip
 		)
 	)
 }
 
-compute_prepare_run.ecs_compute <- function(compute, name) {
-	ecs_register_task_definition(compute$project$region, paste0("cloudburst-", name),
-		compute$image, compute$execution_role, compute$task_role)
+ecs_task_def_name <- function(name, cpu, memory) {
+	paste0("cloudburst-", name, "-c", cpu, "-m", memory)
+}
+
+compute_prepare_run.ecs_compute <- function(compute, name, stages) {
+	resource_requirements <- t(sapply(stages, function(s) s[c("cpu", "memory")]))
+	resource_combinations <- unique(as.data.frame(resource_requirements))
+
+	apply(resource_combinations, 1, function(r) {
+		ecs_register_task_definition(compute$project$region, ecs_task_def_name(name, r[[1]], r[[2]]),
+			compute$image, compute$execution_role, compute$task_role, cpu = r[[1]], memory = r[[2]])
+	})
 }
 
 #' Title
@@ -57,12 +67,10 @@ stage.ecs_compute <- function(fn, cpu, memory, backend = default_compute_backend
 compute_run_stage.ecs_stage <- function(stage, name, bootstrap) {
 	res <- ecs_run_task(
 		region = stage$backend$project$region,
-		family = paste0("cloudburst-", name),
+		family = ecs_task_def_name(name, stage$cpu, stage$memory),
 		cluster = stage$backend$cluster,
 		subnets = stage$backend$subnets,
-		assign_public_ip = T, # FIXME: should expose public IPs as a config depending on subnet routing
-		cpu = stage$cpu,
-		memory = stage$memory,
+		assign_public_ip = stage$backend$assign_public_ip,
 		environment = data.frame(name = "CLOUDBURST_BOOTSTRAP", value = bootstrap)
 	)
 

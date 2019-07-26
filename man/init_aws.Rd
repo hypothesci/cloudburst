@@ -6,6 +6,7 @@
 \usage{
 init_aws(storage_bucket, compute_cluster, compute_image,
   compute_execution_role, compute_subnets, compute_task_role,
+  compute_assign_public_ip,
   region = aws.signature::locate_credentials()$region)
 }
 \arguments{
