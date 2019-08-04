@@ -10,10 +10,9 @@ Encoding: UTF-8
 LazyData: true
 Imports:
   aws.s3,
+  aws.ecs,
   aws.signature,
   aws.ec2metadata,
-  jsonlite,
-  crul,
   igraph,
   uuid,
   base64enc,

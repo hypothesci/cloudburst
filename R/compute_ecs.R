@@ -33,7 +33,7 @@ compute_prepare_run.ecs_compute <- function(compute, name, stages) {
 	resource_combinations <- unique(as.data.frame(resource_requirements))
 
 	apply(resource_combinations, 1, function(r) {
-		ecs_register_task_definition(compute$project$region, ecs_task_def_name(name, r[[1]], r[[2]]),
+		aws.ecs::register_task_definition(compute$project$region, ecs_task_def_name(name, r[[1]], r[[2]]),
 			compute$image, compute$execution_role, compute$task_role, cpu = r[[1]], memory = r[[2]])
 	})
 }
@@ -65,7 +65,7 @@ stage.ecs_compute <- function(fn, cpu, memory, backend = default_compute_backend
 }
 
 compute_run_stage.ecs_stage <- function(stage, name, bootstrap) {
-	res <- ecs_run_task(
+	res <- aws.ecs::run_task(
 		region = stage$backend$project$region,
 		family = ecs_task_def_name(name, stage$cpu, stage$memory),
 		cluster = stage$backend$cluster,
@@ -78,7 +78,7 @@ compute_run_stage.ecs_stage <- function(stage, name, bootstrap) {
 }
 
 compute_poll_stage.ecs_stage <- function(stage, handle) {
-	res <- ecs_describe_tasks(
+	res <- aws.ecs::describe_tasks(
 		region = stage$backend$project$region,
 		cluster = stage$backend$cluster,
 		tasks = handle
