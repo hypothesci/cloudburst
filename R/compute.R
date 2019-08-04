@@ -67,7 +67,7 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 	}
 
 	# FIXME: this should be run elsewhere, no need to spam task defs
-	# also needs to be organised oer compute backend
+	# also needs to be organised per compute backend
 	compute_prepare_run(compute, name, stages)
 
 	run_start <- Sys.time()
@@ -76,7 +76,8 @@ execute <- function(final_stage, name, storage = default_storage_backend(), comp
 
 	bootstrap_base <- list(
 		storage = storage,
-		stage_storage_prefix = stage_storage_prefix
+		stage_storage_prefix = stage_storage_prefix,
+		loaded_packages = names(sessionInfo()$otherPkgs)
 	)
 
 	for (i in 1:length(stages)) {
