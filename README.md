@@ -61,3 +61,10 @@ Most projects aren't just base R; they require packages installed from CRAN or e
 We can tie this all together and automate it using the [containr](https://github.com/hypothesci/containr) package.
 
 You can use `containr::docker_deploy` to automatically create a Docker image based on your installed version of R with all your Packrat dependencies, and push it to a Docker repository of your choosing. For example, with the example above in which we used AWS ECR to store our container, we could just run `containr::docker_deploy("12345.dkr.ecr.us-east-1.amazonaws.com/my-cloudburst-image:latest")` from inside our project to bundle up all our required packages alongside the correct version of R.
+
+## Installation
+This package and some of its dependencies are not yet available on CRAN and so must be installed directly from GitHub.
+
+```r
+lapply(c("aws.ecs", "containr", "cloudburst"), function(p) remotes::install_github(paste0("hypothesci/", p)))
+```
