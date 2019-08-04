@@ -71,7 +71,8 @@ compute_run_stage.ecs_stage <- function(stage, name, bootstrap) {
 		cluster = stage$backend$cluster,
 		subnets = stage$backend$subnets,
 		assign_public_ip = stage$backend$assign_public_ip,
-		environment = data.frame(name = "CLOUDBURST_BOOTSTRAP", value = bootstrap)
+		environment = data.frame(name = "CLOUDBURST_BOOTSTRAP", value = bootstrap),
+		command = c("Rscript", "-e", "cloudburst::runner")
 	)
 
 	res$tasks$taskArn
