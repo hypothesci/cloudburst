@@ -86,13 +86,11 @@ compute_poll_stage.ecs_stage <- function(stage, handle) {
 	)
 
 	status <- res$tasks$lastStatus
+	container <- res$tasks$containers[[1]]
 
-	if (status %in% c("PROVISIONING", "PENDING", "ACTIVATING", "RUNNING", "DEACTIVATING", "STOPPING", "DEPROVISIONING")) {
-		"executing"
-	} else if (status == "STOPPED") {
-		container <- res$tasks$containers[[1]]
+	if (!is.null(container$exitCode)) {
 		if (container$exitCode == 0) "complete" else "failed"
 	} else {
-		stop(paste0("unrecognised ECS task status: ", status))
+		"executing"
 	}
 }
