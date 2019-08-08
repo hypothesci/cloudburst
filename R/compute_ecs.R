@@ -34,7 +34,8 @@ compute_prepare_run.ecs_compute <- function(compute, name, stages) {
 
 	apply(resource_combinations, 1, function(r) {
 		aws.ecs::register_task_definition(compute$project$region, ecs_task_def_name(name, r[[1]], r[[2]]),
-			compute$image, compute$execution_role, compute$task_role, cpu = r[[1]], memory = r[[2]])
+			compute$image, compute$execution_role, compute$task_role, cpu = r[[1]], memory = r[[2]],
+			log_group = "cloudburst", log_stream_prefix = "cloudburst")
 	})
 }
 
@@ -72,7 +73,8 @@ compute_run_stage.ecs_stage <- function(stage, name, bootstrap) {
 		subnets = stage$backend$subnets,
 		assign_public_ip = stage$backend$assign_public_ip,
 		environment = data.frame(name = "CLOUDBURST_BOOTSTRAP", value = bootstrap),
-		command = c("Rscript", "-e", "cloudburst::runner()")
+		command = c("Rscript", "-e", "cloudburst::runner()"),
+		started_by = "cloudburst"
 	)
 
 	res$tasks$taskArn
